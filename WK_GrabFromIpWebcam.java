@@ -48,7 +48,7 @@ import javax.swing.JDialog;
 public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
 {
     // const var.
-    public static final String VERSION = "0.9.1.0";
+    public static final String VERSION = "0.9.2.0";
     private final int FLAGS = NO_IMAGE_REQUIRED;
     private final String HTTP = "http://";
     private final String[] STR_ORIENTATIONS = new String[] { "landscape", "upsidedown", "portrait", "upsidedown_portrait"};
@@ -73,7 +73,7 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
     private boolean flag_still = false;
     private boolean flag_stillaf = false;
     private boolean flag_focus = false;
-    private boolean flag_nofocus = false;
+    private boolean isFocus = true;
     private boolean flag_led = false;
     private boolean onLed = false;
     private boolean flag_ffc = false;
@@ -140,7 +140,6 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
         JButton but_still_cont = new JButton("Create still image");
         JButton but_stillaf_cont = new JButton("Create AF still image");
         JButton but_focus_cont = new JButton("Focus");
-        JButton but_nofocus_cont = new JButton("No focus");
         JButton but_led_cont = new JButton("LED is off");
         JButton but_ffc_cont = new JButton("RearCamera");
         JButton but_nv_cont = new JButton("NightVision is off");
@@ -170,17 +169,22 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
             }
         });
 
+        
         but_focus_cont.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                flag_focus = true;
-            }
-        });
+                if(isFocus)
+                {
+                    but_focus_cont.setText("No focus");
+                    isFocus = false;
+                }
+                else
+                {
+                    but_focus_cont.setText("Focus");
+                    isFocus = true;
+                }
 
-        but_nofocus_cont.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                flag_nofocus = true;
+                flag_focus = true;
             }
         });
 
@@ -297,28 +301,33 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
               }
         });
 
-        diag_cntrl.setLayout(new GridLayout(11, 1));
+        diag_cntrl.setLayout(new GridLayout(10, 1));
         diag_cntrl.add(but_dspstill_cont);
         diag_cntrl.add(but_stop_cont);
         diag_cntrl.add(but_ovl_cont);
         diag_cntrl.add(but_ffc_cont);
         diag_cntrl.add(but_ori_cont);
         diag_cntrl.add(but_focus_cont);
-        diag_cntrl.add(but_nofocus_cont);
         diag_cntrl.add(but_nv_cont);
         diag_cntrl.add(but_led_cont);
         diag_cntrl.add(but_still_cont);
         diag_cntrl.add(but_stillaf_cont);
-        diag_cntrl.setSize(200, 440);
+        diag_cntrl.setSize(200, 400);
         diag_cntrl.setVisible(true);
         // ----- End of the control dialog -----
         
         try
         {
             // Set URLs
-            if(ip2.equals("") || ip3.equals("") || ip4.equals(""))
+            if(ip2.equals("") || ip3.equals("") || ip4.equals("") || port.equals(""))
             {
-                url_base = HTTP + ip1 + ":" + port;
+                url_base = ip1;
+                
+                if(url_base.endsWith("/"))
+                {
+                    int num = url_base.length();
+                    url_base = url_base.substring(0, num - 1);
+                }
             }
             else
             {
@@ -404,14 +413,16 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
                 // function
                 if(flag_focus)
                 {
-                    connectUrl(url_focus);
+                    if(isFocus)
+                    {
+                        connectUrl(url_focus);
+                    }
+                    else
+                    {
+                        connectUrl(url_nofocus);
+                    }                    
+                    
                     flag_focus = false;
-                }
-
-                if(flag_nofocus)
-                {
-                    connectUrl(url_nofocus);
-                    flag_nofocus = false;
                 }
 
                 if(flag_led)
@@ -476,6 +487,7 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
                 {
                     url_ori = new URL(url_base + "/settings/orientation?set=" + STR_ORIENTATIONS[ind_orientation]);
                     connectUrl(url_ori);
+                    imp_dsp.close();
                     flag_orientation = false;
                 }
 
@@ -483,6 +495,7 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
                 {
                     time_ini = Calendar.getInstance().getTimeInMillis();
                     framenum = 0.0;
+                    imp_dsp.close();
                     flag_enDisplayStill = false;
                 }
 
