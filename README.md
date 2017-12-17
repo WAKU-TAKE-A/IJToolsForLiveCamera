@@ -1,3 +1,1 @@
-# IJToolsForLiveCamera
-
-During the trial.
+# The Source of IJToolsForLiveCamera
