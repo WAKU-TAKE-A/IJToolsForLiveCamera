@@ -136,16 +136,16 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
     {
         // ----- The control dialog during continuous grabbing -----
         diag_cntrl = new JDialog(diag_cntrl, title, false);
-        JButton but_stop_cont = new JButton("Stop");
-        JButton but_still_cont = new JButton("Create still image");
-        JButton but_stillaf_cont = new JButton("Create AF still image");
-        JButton but_focus_cont = new JButton("Focus");
-        JButton but_led_cont = new JButton("LED is off");
-        JButton but_ffc_cont = new JButton("RearCamera");
-        JButton but_nv_cont = new JButton("NightVision is off");
-        JButton but_ovl_cont = new JButton("Overlay is off");
-        JButton but_ori_cont = new JButton(STR_ORIENTATIONS[ind_orientation]);
-        JButton but_dspstill_cont = new JButton("Display latest frame");
+        final JButton but_stop_cont = new JButton("Stop");
+        final JButton but_still_cont = new JButton("Create still image");
+        final JButton but_stillaf_cont = new JButton("Create AF still image");
+        final JButton but_focus_cont = new JButton("Focus");
+        final JButton but_led_cont = new JButton("LED is off");
+        final JButton but_ffc_cont = new JButton("RearCamera");
+        final JButton but_nv_cont = new JButton("NightVision is off");
+        final JButton but_ovl_cont = new JButton("Overlay is off");
+        final JButton but_ori_cont = new JButton(STR_ORIENTATIONS[ind_orientation]);
+        final JButton but_dspstill_cont = new JButton("Display latest frame");
 
         but_stop_cont.addMouseListener(new MouseAdapter() {
             @Override
@@ -168,7 +168,6 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
                 flag_stillaf = true;
             }
         });
-
         
         but_focus_cont.addMouseListener(new MouseAdapter() {
             @Override
@@ -571,7 +570,7 @@ public class WK_GrabFromIpWebcam implements ExtendedPlugInFilter
             throw new Exception("Error of setImageFromUrl() :" + ex.getMessage());
         }
     }
-
+    
     private ImagePlus createImagePlusFromUrl(URL url)
     {
         try
